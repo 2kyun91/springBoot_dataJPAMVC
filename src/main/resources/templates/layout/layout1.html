@@ -1,0 +1,73 @@
+<!-- layout1.html은 여러 페이지에서 사용하는 레이아웃이다. -->
+
+<!doctype html>
+<html class="no-js" lang="" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+<meta charset="utf-8">
+<title></title>
+<meta name="description" content="">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="manifest" href="site.webmanifest">
+<link rel="apple-touch-icon" href="icon.png">
+
+<link rel="stylesheet" href="css/normalize.css">
+<link rel="stylesheet" href="css/main.css">
+
+<meta name="theme-color" content="#fafafa">
+</head>
+
+<body>
+	<!-- 부트스트랩의 pannel을 이용해서 화면 상단에는 간단한 문자들을 보여주고 레이아웃의 내용물은 pannel로 처리하도록 한다. -->
+	<div class="page-header">
+		<h1>
+			SpringBoot Project<small> for Spring MVC + JPA</small>
+		</h1>
+	</div>
+	
+	<!-- content body -->
+	<div class="panel panel-default" layout:fragment="content">
+		<!-- layout:fragment는 <div>와 같이 실제로 보이는 영역에 적용해 준다. -->
+	</div>
+
+	<script src="js/vendor/modernizr-3.7.1.min.js"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+		crossorigin="anonymous"></script>
+	
+	<!-- '@{/}'를 이용해서 경로를 수정한다. -->
+	<script>
+		window.jQuery
+				|| document
+						.write('<script th:src="@{/js/vendor/jquery-3.3.1.min.js}"><\/script>')
+	</script>
+	<script th:src="@{/js/plugins.js}"></script>
+	<script th:src="@{/js/main.js}"></script>
+	
+	<!-- 부트스트랩 추가 부분 -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"> <!-- 합쳐지고 최소화된 최신 CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css"> <!-- 부가적인 테마 -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script> <!-- 합쳐지고 최소화된 최신 자바스크립트 -->	
+
+	<!-- custom javascript -->
+	<th:block layout:fragment="script">
+		<!-- th:block은 아무런 태그가 없는 영역을 포시할 때 사용한다. -->
+	</th:block>
+
+	<!-- Google Analytics: change UA-XXXXX-Y to be your site's ID. -->
+	<script>
+		window.ga = function() {
+			ga.q.push(arguments)
+		};
+		ga.q = [];
+		ga.l = +new Date;
+		ga('create', 'UA-XXXXX-Y', 'auto');
+		ga('set', 'transport', 'beacon');
+		ga('send', 'pageview')
+	</script>
+	<script src="https://www.google-analytics.com/analytics.js" async defer></script>
+</body>
+
+</html>
