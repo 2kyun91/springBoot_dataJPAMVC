@@ -1,13 +1,18 @@
 package com.example.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.example.dto.WebBoard;
 import com.example.page.PageVO;
+import com.example.persistence.WebBoardRepository;
 
 import lombok.extern.java.Log;
 
@@ -29,9 +34,25 @@ public class WebBoardController {
 //		log.info("list() called..." + page);
 //	}
 	
+//	@GetMapping("/list")
+//	public void list2(PageVO pageVO) {
+//		Pageable pageable = pageVO.makePageable(0, "bno");
+//		log.info("" + pageable);
+//	}
+	
+	@Autowired
+	private WebBoardRepository webBoardRepository;
+	
+	// 파라미터로 Model을 전달 받고 WebBoardRepository를 이용해서 페이지 처리를 진행한 결과를 result에 담는다.
 	@GetMapping("/list")
-	public void list2(PageVO pageVO) {
-		Pageable pageable = pageVO.makePageable(0, "bno");
-		log.info("" + pageable);
+	public void list(PageVO vo, Model model) {
+		Pageable page = vo.makePageable(0, "bno");
+		
+		Page<WebBoard> result = webBoardRepository.findAll(webBoardRepository.makePredicate(null, null), page);
+		
+		log.info("" + page);
+		log.info("" + result);
+		
+		model.addAttribute("result", result);
 	}
 }
