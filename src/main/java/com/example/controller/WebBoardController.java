@@ -8,16 +8,20 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.dto.WebBoard;
+import com.example.page.PageMaker;
 import com.example.page.PageVO;
 import com.example.persistence.WebBoardRepository;
 
 import lombok.extern.java.Log;
 
 @Controller
-@RequestMapping("/boards/")
+@RequestMapping("/boards")
 @Log
 public class WebBoardController {
 	
@@ -43,16 +47,45 @@ public class WebBoardController {
 	@Autowired
 	private WebBoardRepository webBoardRepository;
 	
-	// 파라미터로 Model을 전달 받고 WebBoardRepository를 이용해서 페이지 처리를 진행한 결과를 result에 담는다.
+	/*
+	 * 파라미터로 Model을 전달 받고 WebBoardRepository를 이용해서 페이지 처리를 진행한 결과를 result에 담는다.
+	 * 검색 기능을 처리하기 위해서 Predicate를 생성하는 부분을 전달받은 PageVo를 이용하도록 해야한다.
+	 * PageVO를 @ModelAttribute("PageVO")로 지정해두고 getType(), getKeyword()를 이용해서 Predicate를 처리하도록 한다.
+	 * */
 	@GetMapping("/list")
-	public void list(PageVO vo, Model model) {
+	public void list(@ModelAttribute("pageVO") PageVO vo, Model model) {
 		Pageable page = vo.makePageable(0, "bno");
 		
-		Page<WebBoard> result = webBoardRepository.findAll(webBoardRepository.makePredicate(null, null), page);
+		// Page<WebBoard> result = webBoardRepository.findAll(webBoardRepository.makePredicate(null, null), page);
+		Page<WebBoard> result = webBoardRepository.findAll(webBoardRepository.makePredicate(vo.getType(), vo.getKeyword()), page);
+		
+		System.out.println("result : " + result);
 		
 		log.info("" + page);
 		log.info("" + result);
+		log.info("TOTAL PAGE NUMBER : " + result.getTotalPages());
 		
-		model.addAttribute("result", result);
+		// Model에 직접 Page<T>를 담는 대신 PageMaker 객체를 담는다.
+		model.addAttribute("result", new PageMaker(result));
+	}
+	
+	@GetMapping("/register")
+	public void registerGET(@ModelAttribute("vo") WebBoard vo) {
+		log.info("register get");
+	}
+	
+	@PostMapping("/register")
+	public String registerPOST(@ModelAttribute("vo") WebBoard vo, RedirectAttributes rttr) {
+		log.info("register post");
+		log.info("" + vo);
+		
+		webBoardRepository.save(vo);
+		/*
+		 * addFlashAttribute()는 RedirectAttributes가 제공하는 함수로 리다이렉트 직전에 플래시에 저장하는 메소드이고 리다이렉트 이후에는 소멸된다.
+		 * RedirectAttributes는 리다이렉트 시 헤더에 파라미터를 붙이지 않기 떄문에 URL에 정보가 노출되지 않는다.
+		 * */
+		rttr.addFlashAttribute("msg", "success");
+		
+		return "redirect:/boards/list";
 	}
 }

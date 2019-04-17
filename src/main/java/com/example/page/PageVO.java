@@ -11,11 +11,34 @@ public class PageVO {
 	private int page;
 	private int size;
 	
-	public PageVO() {
+	/* 
+	 * 검색조건의 처리가 가능하도록 하기 위해 검색 keyword와 검색 type을 수집할 수 있도록 인스턴스 변수와 getter/setter를 추가한다.
+	 * */ 
+	private String keyword;
+	private String type;
+	
+	public PageVO(String keyword, String type) {
 		this.page = 1;
 		this.size = DEFAULT_SIZE;
 	}
 	
+
+	public String getKeyword() {
+		return keyword;
+	}
+
+	public void setKeyword(String keyword) {
+		this.keyword = keyword;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	public int getPage() {
 		return page;
 	}
