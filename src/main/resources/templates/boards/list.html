@@ -4,6 +4,12 @@
 	
 <div layout:fragment="content">
 	<div class="panel-heading">List Page</div>
+	
+	<div class="panel-body pull-right">
+		<h3>
+			<a class="btn btn-primary" th:href="@{register}">등록하기</a>
+		</h3>
+	</div>
 	<div class="panel-body">
 		<div th:with="result=${result.result}">
 			<table class="table table-striped table-bordered table-hover" id="dataTables-example">
@@ -34,7 +40,7 @@
 			 -->
 			<div>
 				<select id="searchType" style="height: 25px;">
-					<option>전체</option>
+					<option value="a" th:selected="${pageVO.type} == 'a'">전체</option>
 					<option value="t" th:selected="${pageVO.type} == 't'">글 제목</option>
 					<option value="c" th:selected="${pageVO.type} == 'c'">글 내용</option>
 					<option value="w" th:selected="${pageVO.type} == 'w'">작성자</option>
@@ -99,7 +105,7 @@
 			
 			$(".pagination a").click(function(e) {
 				e.preventDefault(); // 페이지 번호를 클릭할 때의 <a> 태그의 기본 동작을 막는다.
-				formObj.find('[name="page"]').val($(this).attr('href')); // 해당 페이지 번호의 값을 <form> 태그의 값으로 설정한다. 
+				formObj.find('[name="page"]').val($(this).attr('href')); // 해당 페이지 번호의 값을 <form> 태그의 <input>의 값으로 설정한다. 
 				formObj.submit(); // <form> 태그를 동작한다.(GET 방식)
 			});
 			
@@ -111,6 +117,16 @@
 				if (key.keyCode == 13) { // 엔터키 이벤트
 					searchOption();
 				}
+			});
+			
+			$(".boardLink").click(function(e) {
+				e.preventDefault();
+				
+				var boardNo = $(this).attr("href");
+				
+				formObj.attr("action", [[@{'/boards/view'}]]);
+				formObj.append("<input type='hidden' name='bno' value='" + boardNo + "'>");
+				formObj.submit();
 			});
 		});
 	</script>

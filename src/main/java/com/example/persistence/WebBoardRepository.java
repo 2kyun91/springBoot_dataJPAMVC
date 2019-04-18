@@ -38,6 +38,9 @@ public interface WebBoardRepository extends CrudRepository<WebBoard, Long>, Quer
 		}
 		
 		switch (type) {
+		case "a" :
+			booleanBuilder.andAnyOf(qWebBoard.title.like("%" + keyword + "%"), qWebBoard.content.like("%" + keyword + "%"), qWebBoard.writer.like("%" + keyword + "%"));
+			break;
 		case "t" :
 			booleanBuilder.and(qWebBoard.title.like("%" + keyword + "%"));
 			break;

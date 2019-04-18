@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.example.dto.WebBoard;
 import com.example.page.PageMaker;
@@ -85,6 +87,62 @@ public class WebBoardController {
 		 * RedirectAttributes는 리다이렉트 시 헤더에 파라미터를 붙이지 않기 떄문에 URL에 정보가 노출되지 않는다.
 		 * */
 		rttr.addFlashAttribute("msg", "success");
+		
+		return "redirect:/boards/list";
+	}
+	
+	@GetMapping("/view")
+	public void view(Long bno, @ModelAttribute("pageVO") PageVO vo, Model model) {
+		log.info("BNO : " + bno);
+		
+		webBoardRepository.findById(bno).ifPresent(board -> model.addAttribute("vo" ,board));
+	}
+	
+	@GetMapping("/modify")
+	public void modify(Long bno, @ModelAttribute("pageVO") PageVO vo, Model model) {
+		log.info("MODIFY BNO : " + bno);
+		
+		webBoardRepository.findById(bno).ifPresent(board -> model.addAttribute("vo", board));
+	}
+	
+	@PostMapping("/modify")
+	public String modifyPost(WebBoard board, PageVO vo, RedirectAttributes rttr) {
+		log.info("MODIFY WebBoard : " + board);
+		
+		webBoardRepository.findById(board.getBno()).ifPresent(origin -> {
+			// 기존 게시물의 내용에 변경되는 내용을 갱신한다.
+			origin.setTitle(board.getTitle());
+			origin.setContent(board.getContent());
+			
+			// DB에 저장
+			webBoardRepository.save(origin);
+			
+			rttr.addFlashAttribute("msg", "success");
+			rttr.addAttribute("bno", origin.getBno());
+		});
+		
+		rttr.addAttribute("page", vo.getPage());
+		rttr.addAttribute("size", vo.getSize());
+		rttr.addAttribute("type", vo.getType());
+		rttr.addAttribute("keyword", vo.getKeyword());
+		
+		return "redirect:/boards/list";
+	}
+	
+	@PostMapping("/delete")
+	public String delete(Long bno, PageVO vo, RedirectAttributes rttr) {
+		log.info("DELETE BNO : " + bno);
+		
+		webBoardRepository.deleteById(bno);
+		
+		rttr.addFlashAttribute("msg", "success");
+		
+		// 페이징과 검색했던 결과로 이동하는 경우. 
+		// addAttribute()는 URL에 파라미터를 추가해서 전송한다. 
+		rttr.addAttribute("page", vo.getPage());
+		rttr.addAttribute("size", vo.getSize());
+		rttr.addAttribute("type", vo.getType());
+		rttr.addAttribute("keyword", vo.getKeyword());
 		
 		return "redirect:/boards/list";
 	}
